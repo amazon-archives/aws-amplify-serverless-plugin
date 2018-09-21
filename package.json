@@ -22,5 +22,8 @@
   "homepage": "https://github.com/awslabs/aws-amplify-serverless-plugin#readme",
   "dependencies": {
     "chalk": "^2.4.1"
+  },
+  "peerDependencies": {
+    "serverless": "1.x"
   }
 }
