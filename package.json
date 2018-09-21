@@ -1,0 +1,26 @@
+{
+  "name": "aws-amplify-serverless-plugin",
+  "version": "0.0.1",
+  "description": "A plugin for the Serverless Framework that outputs AWS Amplify artifacts based on the deployed resources.",
+  "keywords": [
+    "serverless",
+    "plugin",
+    "aws",
+    "cloudformation",
+    "amplify"
+  ],
+  "main": "./index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/awslabs/aws-amplify-serverless-plugin.git"
+  },
+  "author": "Adrian Hall <adrianha@amazon.com>",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/awslabs/aws-amplify-serverless-plugin/issues"
+  },
+  "homepage": "https://github.com/awslabs/aws-amplify-serverless-plugin#readme",
+  "dependencies": {
+    "chalk": "^2.4.1"
+  }
+}

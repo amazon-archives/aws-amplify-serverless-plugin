@@ -1,0 +1,19 @@
+{
+  "name": "sls-appsync-backend",
+  "version": "1.0.0",
+  "description": "An example backend for AppSync with Amplify outputs",
+  "main": "handler.js",
+  "scripts": {
+    "deploy": "./node_modules/.bin/sls deploy -v"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.308.0",
+    "chalk": "^2.4.1",
+    "serverless": "^1.30.0",
+    "serverless-amplify-plugin": "file:..",
+    "serverless-appsync-plugin": "^1.0.5"
+  }
+}

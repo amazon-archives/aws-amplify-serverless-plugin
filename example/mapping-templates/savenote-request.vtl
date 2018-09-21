@@ -1,0 +1,12 @@
+{
+    "version": "2012-02-28",
+    "operation": "PutItem",
+    "key": {
+        "NoteId": $util.dynamodb.toDynamoDBJson($ctx.args.NoteId),
+        "UserId": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
+    },
+    "attributeValues": {
+        "title": $util.dynamodb.toDynamoDBJson($ctx.args.title),
+        "content": $util.dynamodb.toDynamoDBJson($ctx.args.content)
+    }
+}

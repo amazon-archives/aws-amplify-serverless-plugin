@@ -1,0 +1,164 @@
+# // Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# // SPDX-License-Identifier: Apache-2.0
+
+service: sample-amplify
+
+plugins:
+  modules:
+    - serverless-appsync-plugin
+    - aws-amplify-serverless-plugin
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  apiname: ${opt:apiname, 'notes_dev'}
+
+custom:
+  accountId: { Ref: AWS::AccountId }
+  amplify:
+    - filename: examples/awsconfiguration.json
+      type: native
+      appClient: AndroidUserPoolClient
+    - filename: examples/aws-exports.js
+      type: javascript
+      appClient: WebUserPoolClient
+
+  appSync:
+    name: ${self:provider.apiname}
+    region: ${self:provider.region}
+    authenticationType: AMAZON_COGNITO_USER_POOLS
+    userPoolConfig:
+      awsRegion: { Ref: AWS::Region }
+      defaultAction: ALLOW
+      userPoolId: { Ref: UserPool }
+    schema: schema.graphql # In case you want to change it
+    serviceRole: "AppSyncServiceRole"
+    dataSources:
+      - type: AMAZON_DYNAMODB
+        name: NotesTableDS
+        description: "DynamoDB Notes Table"
+        config:
+          tableName: { Ref: NotesTable }
+          serviceRoleArn: { Fn::GetAtt: [ DynamoDBRole, Arn ] }
+    mappingTemplates:
+      - dataSource: NotesTableDS
+        type: Query
+        field: allNotes
+        request: "allnotes-request.vtl"
+        response: "allnotes-response.vtl"
+      - dataSource: NotesTableDS
+        type: Query
+        field: getNote
+        request: "getnote-request.vtl"
+        response: "common-response.vtl"
+      - dataSource: NotesTableDS
+        type: Mutation
+        field: saveNote
+        request: "savenote-request.vtl"
+        response: "common-response.vtl"
+      - dataSource: NotesTableDS
+        type: Mutation
+        field: deleteNote
+        request: "deletenote-request.vtl"
+        response: "common-response.vtl"
+
+resources:
+  Resources:
+    # Amazon Cognito user pool
+    UserPool:
+      Type: "AWS::Cognito::UserPool"
+      Description: "An Amazon Cognito user pool for authenticating users"
+      Properties:
+        UserPoolName: ${self:provider.apiname}-user-pool
+
+    # An app client for the Amazon Cognito user pool
+    WebUserPoolClient:
+      Type: "AWS::Cognito::UserPoolClient"
+      Description: "App Client for Web Usage"
+      Properties:
+        ClientName: ${self:provider.apiname}-web-cognitoclient
+        GenerateSecret: false
+        UserPoolId: { Ref: UserPool }
+    AndroidUserPoolClient:
+      Type: "AWS::Cognito::UserPoolClient"
+      Description: "App Client for Android Client"
+      Properties:
+        ClientName: ${self:provider.apiname}-android-cognitoclient
+        GenerateSecret: true
+        UserPoolId: { Ref: UserPool }
+    iOSUserPoolClient:
+      Type: "AWS::Cognito::UserPoolClient"
+      Description: "App Client for iOS Client"
+      Properties:
+        ClientName: ${self:provider.apiname}-android-cognitoclient
+        GenerateSecret: true
+        UserPoolId: { Ref: UserPool }
+
+    # Identity Poool
+    IdentityPool:
+      Type: "AWS::Cognito::IdentityPool"
+      Properties:
+        IdentityPoolName: ${self:provider.apiname}_pool
+        AllowUnauthenticatedIdentities: true
+
+    # DynamoDB Table
+    NotesTable:
+      Type: "AWS::DynamoDB::Table"
+      Description: "Data Store for AWS AppSync Notes Type"
+      Properties:
+        TableName: ${self:provider.apiname}-notes-table
+        AttributeDefinitions:
+          - AttributeName: "NoteId"
+            AttributeType: "S"
+          - AttributeName: "UserId"
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: "NoteId"
+            KeyType: "HASH"
+          - AttributeName: "UserId"
+            KeyType: "RANGE"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+
+    # IAM Policy to allow working with DynamoDB
+    AppSyncDynamoDBPolicy:
+      Type: "AWS::IAM::ManagedPolicy"
+      Properties:
+        Description: "Managed Policy to allow AWS AppSync to access tables in DynamoDB"
+        Path: /appsync/
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:DeleteItem
+                - dynamodb:UpdateItem
+                - dynamodb:Query
+                - dynamodb:Scan
+              Resource:
+                - { Fn::Join: [ '', [ { Fn::GetAtt: [ NotesTable, Arn ] }, '/*' ] ] }
+
+    # IAM Role for implementing the AppSync / DynamoDB policy
+    DynamoDBRole:
+      Type: "AWS::IAM::Role"
+      Description: "IAM Role for allowing AppSync to access DynamoDB"
+      DependsOn:
+        - AppSyncDynamoDBPolicy
+      Properties:
+        RoleName: ${self:provider.apiname}-appsync-dynamodb-role
+        ManagedPolicyArns:
+          - Ref: AppSyncDynamoDBPolicy
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - sts:AssumeRole
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+
+

@@ -1,0 +1,8 @@
+{
+    "version": "2012-02-28",
+    "operation": "GetItem",
+    "key": {
+        "NoteId": $util.dynamodb.toDynamoDBJson($ctx.args.NoteId),
+        "UserId": $util.dynamodb.toDynamoDBJson($ctx.identity.sub)
+    }
+}
