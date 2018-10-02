@@ -29,6 +29,8 @@ custom:
     - filename: examples/awsconfiguration.json
       type: native
       appClient: AndroidUserPoolClient
+    - filename: examples/schema.json
+      type: schema.json
     - filename: examples/aws-exports.js
       type: javascript
       appClient: WebUserPoolClient
@@ -37,7 +39,10 @@ custom:
 Each entry in the `amplify` section must consist of three parts:
 
 * `filename` is where you want the file to be stored.  The directory must already exist.
-* `type` is either `native` (an `awsconfiguration.json` type file) or `javascript` (an `aws-exports.js` type file).
+* `type` is one of the following:
+    * `native` (an `awsconfiguration.json` type file),
+    * `javascript` (an `aws-exports.js` type file),
+    * `schema.json` (the AWS AppSync schema in JSON format),
 * `appClient` is the name of the Amazon Cognito user pool app client configured within the `resources` section of the `serverless.yml` file.  It is optional.
 
 See the `example` directory for a complete sample of an AWS AppSync client deployment with Amazon Cognito user pools.
