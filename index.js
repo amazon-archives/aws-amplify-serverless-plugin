@@ -92,12 +92,15 @@ class ServerlessAmplifyPlugin {
         this.log('debug', `Processing AWS AppSync API ${resource.LogicalResourceId}`);
         const apiId = resource.PhysicalResourceId.split('/')[1];
         let result = await this.fetch('AppSync', 'getGraphqlApi', { apiId });
+        let schemaResult = await this.fetch('AppSync', 'getIntrospectionSchema', { apiId, format: 'JSON' });
+        let schema = JSON.parse(schemaResult.schema.toString())
         return {
             'AppSync': {
                 'ApiUrl': result.graphqlApi.uris.GRAPHQL,
                 'AuthMode': result.graphqlApi.authenticationType,
                 'Region': result.graphqlApi.arn.split(':')[3]
-            }
+            },
+            'AppSyncSchema': schema
         };
     }
 
@@ -331,6 +334,14 @@ class ServerlessAmplifyPlugin {
                     this.log('info', `Writing Javascript configuration to ${fileDetails.filename}`);
                     let jsConfig = this.toJavascriptConfiguration(configuration, fileDetails.appClient);
                     this.writeConfigurationFile(fileDetails.filename, jsConfig);
+                    break;
+                case 'schema.json':
+                    if (configuration.hasOwnProperty('AppSyncSchema')) {
+                        this.log('info', `Writing schema.json file to ${fileDetails.filename}`);
+                        this.writeConfigurationFile(fileDetails.filename, JSON.stringify(configuration.AppSyncSchema, null, 2));
+                    } else {
+                        this.log('error', 'Schema.json was requested, but not available in configuration');
+                    }
                     break;
                 default:
                     this.log('warn', `Skipping entry: ${JSON.stringify(fileDetails)} - missing or unknown type field`);
