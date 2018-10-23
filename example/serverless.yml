@@ -66,6 +66,14 @@ custom:
 
 resources:
   Resources:
+
+    # Amazon Cognito user pool - used for testing so that we can check the defaults section
+    FirstListedUserPool:
+      Type: "AWS::Cognito::UserPool"
+      Description: "An Amazon Cognito user pool for authenticating users"
+      Properties:
+        UserPoolName: ${self:provider.apiname}-fake-pool
+
     # Amazon Cognito user pool
     UserPool:
       Type: "AWS::Cognito::UserPool"
@@ -102,6 +110,13 @@ resources:
       Properties:
         IdentityPoolName: ${self:provider.apiname}_pool
         AllowUnauthenticatedIdentities: true
+
+    # S3 Bucket for User Files
+    UserFiles:
+      Type: "AWS::S3::Bucket"
+      Description: "User Files Bucket"
+      Properties:
+        BucketName: ${self:service.name}-userfiles
 
     # DynamoDB Table
     NotesTable:

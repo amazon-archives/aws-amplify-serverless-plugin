@@ -88,7 +88,7 @@ The following resources are supported:
 * AWS AppSync (either via `resources` or the [serverless-appsync-plugin](https://github.com/sid88in/serverless-appsync-plugin)).
 * Amazon Cognito federated identities.
 * Amazon Cognito user pools.
-* S3 buckets for user file storage (only the first listed S3 bucket is handled).
+* S3 buckets for user file storage.
 
 ## Questions, Issues, Feature Requests
 
