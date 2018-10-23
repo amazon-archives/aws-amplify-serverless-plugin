@@ -294,8 +294,8 @@ class ServerlessAmplifyPlugin {
 
         if (configuration.hasOwnProperty('S3TransferUtility')) {
             config.push(
-                `    "aws_user_files_s3_bucket": "${nativeConfig.S3TransferUtility.Bucket}",`
-                `    "aws_user_files_s3_bucket_region": "${nativeConfig.S3TransferUtility.Region}",`
+                `    "aws_user_files_s3_bucket": "${configuration.S3TransferUtility.Bucket}",`,
+                `    "aws_user_files_s3_bucket_region": "${configuration.S3TransferUtility.Region}",`
             );
         }
 
