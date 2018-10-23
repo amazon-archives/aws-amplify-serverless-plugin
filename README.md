@@ -29,14 +29,16 @@ custom:
     - filename: examples/awsconfiguration.json
       type: native
       appClient: AndroidUserPoolClient
+      s3bucket: UserFiles
     - filename: examples/schema.json
       type: schema.json
     - filename: examples/aws-exports.js
       type: javascript
       appClient: WebUserPoolClient
+      s3bucket: disabled
 ```
 
-Each entry in the `amplify` section must consist of three parts:
+Each entry in the `amplify` section must consist of two parts, with two optional parts:
 
 * `filename` is where you want the file to be stored.  The directory must already exist.
 * `type` is one of the following:
@@ -44,6 +46,7 @@ Each entry in the `amplify` section must consist of three parts:
     * `javascript` (an `aws-exports.js` type file),
     * `schema.json` (the AWS AppSync schema in JSON format),
 * `appClient` is the name of the Amazon Cognito user pool app client configured within the `resources` section of the `serverless.yml` file.  It is optional.
+* `s3bucket` is the name of the S3 Bucket used for the S3 transfer utility.  It is optional.  If `disabled`, no S3 bucket information is written to the configuration file.  If not included, the first non-deployed S3 bucket will be used.
 
 See the `example` directory for a complete sample of an AWS AppSync client deployment with Amazon Cognito user pools.
 

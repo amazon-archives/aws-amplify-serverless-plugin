@@ -219,14 +219,17 @@ class ServerlessAmplifyPlugin {
             };
         }
 
-        let userFiles = resources.find(r => r.ResourceType === 'AWS::S3::Bucket' && r.LogicalResourceId !== 'ServerlessDeploymentBucket');
-        if (typeof userFiles !== 'undefined') {
-            config.S3TransferUtility = {
-                Default: {
-                    Bucket: userFiles.PhysicalResourceId,
-                    Region: this.provider.getRegion()
-                }
-            };
+        let s3buckets = resources.filter(r => r.ResourceType === 'AWS::S3::Bucket' && r.LogicalResourceId !== 'ServerlessDeploymentBucket');
+        if (s3buckets.length > 0) {
+            let userFiles = fileDetails.hasOwnProperty('s3bucket') ? s3buckets.find(r => r.LogicalResourceId === fileDetails.s3bucket) : s3buckets[0];
+            if (typeof userFiles !== 'undefined') {
+                config.S3TransferUtility = {
+                    Default: {
+                        Bucket: userFiles.PhysicalResourceId,
+                        Region: this.provider.getRegion()
+                    }
+                };
+            }
         }
 
         this.writeConfigurationFile(fileDetails.filename, JSON.stringify(config, null, 2));
@@ -280,12 +283,15 @@ class ServerlessAmplifyPlugin {
             );
         }
 
-        let userFiles = resources.find(r => r.ResourceType === 'AWS::S3::Bucket' && r.LogicalResourceId !== 'ServerlessDeploymentBucket');
-        if (typeof userFiles !== 'undefined') {
-            config.push(
-                `    "aws_user_files_s3_bucket": "${userFiles.PhysicalResourceId}",`,
-                `    "aws_user_files_s3_bucket_region": "${this.provider.getRegion()}",`
-            );
+        let s3buckets = resources.filter(r => r.ResourceType === 'AWS::S3::Bucket' && r.LogicalResourceId !== 'ServerlessDeploymentBucket');
+        if (s3buckets.length > 0) {
+            let userFiles = fileDetails.hasOwnProperty('s3bucket') ? s3buckets.find(r => r.LogicalResourceId === fileDetails.s3bucket) : s3buckets[0];
+            if (typeof userFiles !== 'undefined') {
+                config.push(
+                    `    "aws_user_files_s3_bucket": "${userFiles.PhysicalResourceId}",`,
+                    `    "aws_user_files_s3_bucket_region": "${this.provider.getRegion()}",`
+                );
+            }
         }
 
         config.push('};', '', 'export default awsmobile;', '');
