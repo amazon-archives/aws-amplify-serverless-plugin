@@ -45,6 +45,7 @@ Each entry in the `amplify` section must consist of two parts, with two optional
     * `native` (an `awsconfiguration.json` type file),
     * `javascript` (an `aws-exports.js` type file),
     * `schema.json` (the AWS AppSync schema in JSON format),
+    * `graphql` (a sample GraphQL operations file for codegen)
 * `appClient` is the name of the Amazon Cognito user pool app client configured within the `resources` section of the `serverless.yml` file.  It is optional.
 * `s3bucket` is the name of the S3 Bucket used for the S3 transfer utility.  It is optional.  If `disabled`, no S3 bucket information is written to the configuration file.  If not included, the first non-deployed S3 bucket will be used.
 
@@ -83,6 +84,28 @@ $ (cd web && npm run deploy)
 Once the deployment of the backend is done, the AWS configuration files needed for each of the builds will be updated.
 
 **Note:** If you are generating a configuration file for an iOS build, ensure you do not "copy" the `awsconfiguration.json` file.  If you do, it will not be updated when the deployment happens.
+
+## Support for GraphQL Code Generation (Android)
+
+When you are configuring AWS AppSync for Android apps, you need three files.  In general,
+these will be as follows:
+
+```
+plugins:
+  - aws-amplify-serverless-plugin
+
+custom:
+  amplify:
+    - filename: ../android/app/src/main/res/raw/awsconfiguration.json
+      type: native
+      appClient: AndroidUserPoolClient
+    - filename: ../android/app/src/main/graphql/schema.json
+      type: schema.json
+    - filename: ../android/app/src/main/graphql/operations.graphql
+      type: graphql
+```
+
+You can then follow the instructions within the [AWS AppSync Developers Guide](https://docs.aws.amazon.com/appsync/latest/devguide/building-a-client-app-android-overview.html) to implement the AWS AppSync client.  The files generated will match those that are produced by the [AWS Amplify](https://aws-amplify.github.io) CLI.
 
 ## Supported Resources
 

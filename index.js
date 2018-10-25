@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 const fs = require('fs');
+const path = require('path');
 const chalk = require('chalk');
+const graphqlGenerator = require('amplify-graphql-docs-generator').default;
 
 class ServerlessAmplifyPlugin {
     constructor(serverless, options) {
@@ -134,6 +136,18 @@ class ServerlessAmplifyPlugin {
     }
 
     /**
+     * Writes the schema file to a temporary location.
+     *
+     * @param {Resource} resource the GraphQL API Resource
+     * @returns {String} path to the temporary file
+     */
+    getTemporarySchemaFile(resource) {
+        const filename = path.join('.serverless', 'amplify-schema.json');
+        fs.writeFileSync(filename, JSON.stringify(resource.schema, null, 2));
+        return filename;
+    }
+
+    /**
      * Writes out the required configuration files.
      *
      * @param {Resource][]} resources the fully processed resources with all available data
@@ -154,6 +168,10 @@ class ServerlessAmplifyPlugin {
                     case 'schema.json':
                         this.log('info', `Writing ${fileDetails.type} file to ${fileDetails.filename}`);
                         this.writeSchemaJSONConfiguration(resources, fileDetails);
+                        break;
+                    case 'graphql':
+                        this.log('info', `Writing ${fileDetails.type} file to ${fileDetails.filename}`);
+                        this.writeGraphQLOperations(resources, fileDetails);
                         break;
                     default:
                         this.log('error', `Invalid Amplify configuration directive for ${JSON.stringify(fileDetails)}`);
@@ -311,6 +329,22 @@ class ServerlessAmplifyPlugin {
             this.writeConfigurationFile(fileDetails.filename, JSON.stringify(resource.schema, null, 2));
         } else {
             throw new Error('No GraphQL API found - cannot write schema.json file');
+        }
+    }
+
+    /**
+     * Writes out an 'operations.graphql' file of sample operations
+     *
+     * @param {Resource[]} resources the resources with meta-data
+     * @param {FileDetails} fileDetails the file details
+     */
+    writeGraphQLOperations(resources, fileDetails) {
+        const resource = resources.find(r => r.ResourceType === 'AWS::AppSync::GraphQLApi');
+        if (resource) {
+            const schemaFile = this.getTemporarySchemaFile(resource);
+            graphqlGenerator(schemaFile, fileDetails.filename, { language: 'graphql' });
+        } else {
+            throw new Error(`No GraphQL API found - cannot write ${fileDetails.filename} file`);
         }
     }
 
