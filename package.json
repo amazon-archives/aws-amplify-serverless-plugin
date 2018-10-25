@@ -15,13 +15,15 @@
     "url": "git+https://github.com/awslabs/aws-amplify-serverless-plugin.git"
   },
   "author": "Adrian Hall <adrianha@amazon.com>",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/awslabs/aws-amplify-serverless-plugin/issues"
   },
   "homepage": "https://github.com/awslabs/aws-amplify-serverless-plugin#readme",
   "dependencies": {
-    "chalk": "^2.4.1"
+    "amplify-graphql-docs-generator": "^0.1.29",
+    "chalk": "^2.4.1",
+    "serverless": "^1.32.0"
   },
   "peerDependencies": {
     "serverless": "1.x"

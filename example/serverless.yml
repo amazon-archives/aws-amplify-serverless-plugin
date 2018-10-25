@@ -20,11 +20,13 @@ custom:
       type: native
       appClient: AndroidUserPoolClient
       s3bucket: UserFiles
-    - filename: examples/schema.json
-      type: schema.json
     - filename: examples/aws-exports.js
       type: javascript
       appClient: WebUserPoolClient
+    - filename: examples/schema.json
+      type: schema.json
+    - filename: examples/operations.graphql
+      type: graphql
 
   appSync:
     name: ${self:provider.apiname}
@@ -38,11 +40,20 @@ custom:
     serviceRole: "AppSyncServiceRole"
     dataSources:
       - type: AMAZON_DYNAMODB
-        name: NotesTableDS
+        name: "NotesTableDS"
         description: "DynamoDB Notes Table"
         config:
           tableName: { Ref: NotesTable }
-          serviceRoleArn: { Fn::GetAtt: [ DynamoDBRole, Arn ] }
+          iamRoleStatements:
+            - Effect: Allow
+              Action:
+                - "dynamodb:GetItem"
+                - "dynamodb:PutItem"
+                - "dynamodb:DeleteItem"
+                - "dynamodb:Query"
+              Resource:
+                - { Fn::GetAtt: [ NotesTable, Arn ]}
+                - { Fn::Join: [ '', [ { Fn::GetAtt: [ NotesTable, Arn ] }, '/*' ] ] }
     mappingTemplates:
       - dataSource: NotesTableDS
         type: Query
@@ -138,45 +149,3 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
-
-    # IAM Policy to allow working with DynamoDB
-    AppSyncDynamoDBPolicy:
-      Type: "AWS::IAM::ManagedPolicy"
-      Properties:
-        Description: "Managed Policy to allow AWS AppSync to access tables in DynamoDB"
-        Path: /appsync/
-        PolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-            - Effect: Allow
-              Action:
-                - dynamodb:GetItem
-                - dynamodb:PutItem
-                - dynamodb:DeleteItem
-                - dynamodb:UpdateItem
-                - dynamodb:Query
-                - dynamodb:Scan
-              Resource:
-                - { Fn::Join: [ '', [ { Fn::GetAtt: [ NotesTable, Arn ] }, '/*' ] ] }
-
-    # IAM Role for implementing the AppSync / DynamoDB policy
-    DynamoDBRole:
-      Type: "AWS::IAM::Role"
-      Description: "IAM Role for allowing AppSync to access DynamoDB"
-      DependsOn:
-        - AppSyncDynamoDBPolicy
-      Properties:
-        RoleName: ${self:provider.apiname}-appsync-dynamodb-role
-        ManagedPolicyArns:
-          - Ref: AppSyncDynamoDBPolicy
-        AssumeRolePolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-            - Effect: Allow
-              Action:
-                - sts:AssumeRole
-              Principal:
-                Service:
-                  - appsync.amazonaws.com
-
-
