@@ -1,3 +1,6 @@
-*.json
-*.js
-*.graphql
+// Ignoring generated files
+schema.json
+awsconfiguration.json
+aws-exports.js
+operations.graphql
+API.swift

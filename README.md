@@ -45,9 +45,12 @@ Each entry in the `amplify` section must consist of two parts, with two optional
     * `native` (an `awsconfiguration.json` type file),
     * `javascript` (an `aws-exports.js` type file),
     * `schema.json` (the AWS AppSync schema in JSON format),
-    * `graphql` (a sample GraphQL operations file for codegen)
+    * `graphql` (a sample GraphQL operations file for codegen),
+    * `appsync` (generated code for AppSync - the format is based on the extension)
 * `appClient` is the name of the Amazon Cognito user pool app client configured within the `resources` section of the `serverless.yml` file.  It is optional.
 * `s3bucket` is the name of the S3 Bucket used for the S3 transfer utility.  It is optional.  If `disabled`, no S3 bucket information is written to the configuration file.  If not included, the first non-deployed S3 bucket will be used.
+
+For the `appsync` type, the extension of the file is checked.  Supported formats include `flow`, `ts` (for TypeScript), `scala`, and `swift`.
 
 See the `example` directory for a complete sample of an AWS AppSync client deployment with Amazon Cognito user pools.
 
@@ -106,6 +109,28 @@ custom:
 ```
 
 You can then follow the instructions within the [AWS AppSync Developers Guide](https://docs.aws.amazon.com/appsync/latest/devguide/building-a-client-app-android-overview.html) to implement the AWS AppSync client.  The files generated will match those that are produced by the [AWS Amplify](https://aws-amplify.github.io) CLI.
+
+## Support for GraphQL Code Generation (iOS)
+
+When you are configuring AWS AppSync for iOS apps, you need two files.  In general,
+these will be as follows:
+
+```
+plugins:
+  - aws-amplify-serverless-plugin
+
+custom:
+  amplify:
+    - filename: ../ios/awsconfiguration.json
+      type: native
+      appClient: iOSUserPoolClient
+    - filename: ../ios/GraphQLAPI.swift
+      type: appsync
+```
+
+Add both files to your XCode project.  When prompted, **uncheck the Copy Items box**.  The plugin will maintain these files for you.  If you check the Copy Items box, then your project may not receive the updates if copied.  If you uncheck the box, these files will be updated whenever you deploy your resources.
+
+You can then follow the instructions within the [AWS AppSync Developers Guide](https://docs.aws.amazon.com/appsync/latest/devguide/building-a-client-app-ios-overview.html) to implement the AWS AppSync client.  The files generated will match those that are produced by the [AWS Amplify](https://aws-amplify.github.io) CLI.
 
 ## Supported Resources
 

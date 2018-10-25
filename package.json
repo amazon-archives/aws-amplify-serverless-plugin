@@ -22,6 +22,7 @@
   "homepage": "https://github.com/awslabs/aws-amplify-serverless-plugin#readme",
   "dependencies": {
     "amplify-graphql-docs-generator": "^0.1.29",
+    "aws-appsync-codegen": "^0.17.5",
     "chalk": "^2.4.1",
     "serverless": "^1.32.0"
   },

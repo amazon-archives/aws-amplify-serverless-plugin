@@ -27,6 +27,8 @@ custom:
       type: schema.json
     - filename: examples/operations.graphql
       type: graphql
+    - filename: examples/API.swift
+      type: appsync
 
   appSync:
     name: ${self:provider.apiname}
