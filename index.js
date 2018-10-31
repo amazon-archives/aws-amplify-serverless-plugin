@@ -329,9 +329,11 @@ class ServerlessAmplifyPlugin {
             }
         }
 
-        let config_body = 'export default '.concat(JSON.stringify(config, null, 2));
+        let config_body = 'const awsmobile = '.concat(JSON.stringify(config, null, 2)).concat(';');
 
-        this.writeConfigurationFile(fileDetails.filename, [config_header, config_body].join('\n'));
+        let config_footer = "\nexport default awsmobile;\n"
+
+        this.writeConfigurationFile(fileDetails.filename, [config_header, config_body, config_footer].join('\n'));
     }
 
     /**
