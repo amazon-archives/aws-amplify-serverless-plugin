@@ -6,10 +6,14 @@ const path = require('path');
 const chalk = require('chalk');
 const graphqlGenerator = require('amplify-graphql-docs-generator').default;
 const apiGenerator = require('aws-appsync-codegen');
+const {
+    name,
+    version
+} = require('./package.json');
 
 class ServerlessAmplifyPlugin {
     constructor(serverless, options) {
-        this.useragent = 'serverless-amplify-plugin/0.0.1';
+        this.useragent = `${name}/${version}`;
         this.serverless = serverless;
         this.options = options;
         this.provider = this.serverless.getProvider('aws');
