@@ -1,0 +1,59 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2
+
+machine:
+    environment:
+      PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
+
+defaults: &defaults
+  working_directory: ~/app
+  docker:
+    - image: circleci/node:10
+      environment:
+          ## this enables colors in the output
+          TERM: xterm
+
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: npm install
+      - run: npm run build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+  deploy:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - run:
+          name: "Publish to NPM"
+          command: |
+            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
+              echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+              git config --global user.email $GITHUB_EMAIL
+              git config --global user.name $GITHUB_USER
+              npm run publish
+            else
+              echo "Skipping deploy."
+            fi
+
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build
+      - deploy:
+          filters:
+            branches:
+              only:
+                - release
+          requires:
+            - build
