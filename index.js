@@ -259,6 +259,13 @@ class ServerlessAmplifyPlugin {
                         'ClientId-WebApp': providers['accounts.google.com']
                     };
                 }
+
+                if ('graph.facebook.com' in providers) {
+                    config.FacebookSignin = {
+                        Permisions: "public_profile",
+                        AppId: providers['graph.facebook.com']
+                    };
+                }
             }
         }
 
@@ -338,6 +345,10 @@ class ServerlessAmplifyPlugin {
                 // They are added here in case you need them.
                 if ('accounts.google.com' in providers) {
                     config.google_web_client_id = providers['accounts.google.com'];
+                }
+
+                if ('graph.facebook.com' in providers) {
+                    config.facebook_app_id = providers['graph.facebook.com'];
                 }
             }
         }

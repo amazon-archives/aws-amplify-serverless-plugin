@@ -140,6 +140,7 @@ The following resources are supported:
 * Amazon Cognito federated identities.
   * Amazon Cognito User Pools
   * Google Signin
+  * Facebook Signin
 * Amazon Cognito user pools.
 * S3 buckets for user file storage.
 

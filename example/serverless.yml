@@ -126,6 +126,7 @@ resources:
         AllowUnauthenticatedIdentities: true
         SupportedLoginProviders:
           accounts.google.com: "abc12345678"
+          graph.facebook.com: "abcdefgh0123456789"
 
     # S3 Bucket for User Files
     UserFiles:
