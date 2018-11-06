@@ -124,6 +124,8 @@ resources:
       Properties:
         IdentityPoolName: ${self:provider.apiname}_pool
         AllowUnauthenticatedIdentities: true
+        SupportedLoginProviders:
+          accounts.google.com: "abc12345678"
 
     # S3 Bucket for User Files
     UserFiles:

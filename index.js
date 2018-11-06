@@ -105,7 +105,8 @@ class ServerlessAmplifyPlugin {
                     break;
                 case 'AWS::Cognito::IdentityPool':
                     this.log('debug', `Processing ${JSON.stringify(resource)}`);
-                    detailedResources.push(resource);   // We have all the details we need for this
+                    let idpMetadata = await this.fetch('CognitoIdentity', 'describeIdentityPool', { IdentityPoolId: resource.PhysicalResourceId });
+                    detailedResources.push(Object.assign({}, resource, { metadata: idpMetadata }));
                     break;
                 case 'AWS::Cognito::UserPool':
                     this.log('debug', `Processing ${JSON.stringify(resource)}`);
@@ -245,6 +246,20 @@ class ServerlessAmplifyPlugin {
                     }
                 }
             };
+
+            if (typeof identityPool.metadata.SupportedLoginProviders == 'object') {
+                const providers = identityPool.metadata.SupportedLoginProviders;
+
+                // Each authentication provider that is supported for federation  has an entry in
+                // the SupportedLoginProviders that is a "magic" domain - constant for each provider.
+                // Once you know the provider domain, you can easily add new provider support.
+                if ('accounts.google.com' in providers) {
+                    config.GoogleSignin = {
+                        Permissions: 'email,profile,openid',
+                        'ClientId-WebApp': providers['accounts.google.com']
+                    };
+                }
+            }
         }
 
         const appSync = resources.find(r => r.ResourceType === 'AWS::AppSync::GraphQLApi');
@@ -311,6 +326,20 @@ class ServerlessAmplifyPlugin {
                 config.aws_cognito_region = identityPool.PhysicalResourceId.split(':')[0];
             }
             config.aws_cognito_identity_pool_id = identityPool.PhysicalResourceId;
+
+            if (typeof identityPool.metadata.SupportedLoginProviders == 'object') {
+                const providers = identityPool.metadata.SupportedLoginProviders;
+
+                // Each authentication provider that is supported for federation  has an entry in
+                // the SupportedLoginProviders that is a "magic" domain - constant for each provider.
+                // Once you know the provider domain, you can easily add new provider support.
+                //
+                // Note that aws-exports via Amplify does not include the 3P authentication providers.
+                // They are added here in case you need them.
+                if ('accounts.google.com' in providers) {
+                    config.google_web_client_id = providers['accounts.google.com'];
+                }
+            }
         }
 
         const appSync = resources.find(r => r.ResourceType === 'AWS::AppSync::GraphQLApi');
