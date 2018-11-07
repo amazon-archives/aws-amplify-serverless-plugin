@@ -125,8 +125,9 @@ resources:
         IdentityPoolName: ${self:provider.apiname}_pool
         AllowUnauthenticatedIdentities: true
         SupportedLoginProviders:
-          accounts.google.com: "abc12345678"
-          graph.facebook.com: "abcdefgh0123456789"
+          accounts.google.com: "google-webclient-id"
+          graph.facebook.com: "facebook-app-id"
+          www.amazon.com: "amazon-client-id"
 
     # S3 Bucket for User Files
     UserFiles:

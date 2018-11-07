@@ -262,8 +262,15 @@ class ServerlessAmplifyPlugin {
 
                 if ('graph.facebook.com' in providers) {
                     config.FacebookSignin = {
-                        Permisions: "public_profile",
+                        Permissions: "public_profile",
                         AppId: providers['graph.facebook.com']
+                    };
+                }
+
+                if ('www.amazon.com' in providers) {
+                    config.AmazonSignin = {
+                        Permissions: "profile",
+                        ClientId: providers['www.amazon.com']
                     };
                 }
             }
@@ -349,6 +356,11 @@ class ServerlessAmplifyPlugin {
 
                 if ('graph.facebook.com' in providers) {
                     federated.facebook_app_id = providers['graph.facebook.com'];
+                    hasFederated = true;
+                }
+
+                if ('www.amazon.com' in providers) {
+                    federated.amazon_client_id = providers['www.amazon.com'];
                     hasFederated = true;
                 }
 
