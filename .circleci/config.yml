@@ -27,7 +27,8 @@ jobs:
           key: v1-depedendencies-
       - persist_to_workspace:
           root: ~/repo
-          paths: .
+          paths:
+            - .
 
   publish:
     <<: *defaults
