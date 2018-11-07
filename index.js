@@ -336,19 +336,24 @@ class ServerlessAmplifyPlugin {
 
             if (typeof identityPool.metadata.SupportedLoginProviders == 'object') {
                 const providers = identityPool.metadata.SupportedLoginProviders;
+                const federated = {};
+                let hasFederated = false;
 
                 // Each authentication provider that is supported for federation  has an entry in
                 // the SupportedLoginProviders that is a "magic" domain - constant for each provider.
                 // Once you know the provider domain, you can easily add new provider support.
-                //
-                // Note that aws-exports via Amplify does not include the 3P authentication providers.
-                // They are added here in case you need them.
                 if ('accounts.google.com' in providers) {
-                    config.google_web_client_id = providers['accounts.google.com'];
+                    federated.google_client_id = providers['accounts.google.com'];
+                    hasFederated = true;
                 }
 
                 if ('graph.facebook.com' in providers) {
-                    config.facebook_app_id = providers['graph.facebook.com'];
+                    federated.facebook_app_id = providers['graph.facebook.com'];
+                    hasFederated = true;
+                }
+
+                if (hasFederated) {
+                    config.federated = federated;
                 }
             }
         }
