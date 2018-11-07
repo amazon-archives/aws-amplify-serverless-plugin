@@ -42,7 +42,6 @@ jobs:
           command: npm publish
 
 workflows:
-  version: 2
   build-publish:
     jobs:
       - build:
