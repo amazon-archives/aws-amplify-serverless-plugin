@@ -9,9 +9,6 @@ machine:
       PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
 
 defaults: &defaults
-  branches:
-    only:
-      - release
   working_directory: ~/app
   docker:
     - image: circleci/node:10
@@ -54,9 +51,5 @@ workflows:
     jobs:
       - build
       - deploy:
-          filters:
-            branches:
-              only:
-                - release
           requires:
             - build
