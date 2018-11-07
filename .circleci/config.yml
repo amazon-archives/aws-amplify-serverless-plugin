@@ -42,6 +42,7 @@ jobs:
           command: npm publish
 
 workflows:
+  version: 2
   build-publish:
     jobs:
       - build:
@@ -56,32 +57,3 @@ workflows:
             branches:
               only:
                 - master
-
-
-
-  deploy:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ./
-      - run:
-          name: "Publish to NPM"
-          command: |
-            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
-              echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-              git config --global user.email $GITHUB_EMAIL
-              git config --global user.name $GITHUB_USER
-              npm run publish
-            else
-              echo "Skipping deploy."
-            fi
-
-
-workflows:
-  version: 2
-  build_and_deploy:
-    jobs:
-      - build
-      - deploy:
-          requires:
-            - build
