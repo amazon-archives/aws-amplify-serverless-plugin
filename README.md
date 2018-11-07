@@ -143,7 +143,7 @@ The following resources are supported:
   * Facebook Signin
   * Login with Amazon
 * Amazon Cognito user pools.
-* S3 buckets for user file storage.
+* Amazon S3 buckets for user file storage.
 
 ## Questions, Issues, Feature Requests
 
