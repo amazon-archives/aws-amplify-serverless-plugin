@@ -4,29 +4,62 @@
 #
 version: 2
 
-machine:
-    environment:
-      PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
-
 defaults: &defaults
-  working_directory: ~/app
+  working_directory: ~/repo
   docker:
-    - image: circleci/node:10
-      environment:
-          ## this enables colors in the output
-          TERM: xterm
+    - image: circleci/node:8.9.1
 
 jobs:
   build:
     <<: *defaults
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-
+            # fallback to using latest cache if no exact match is found
+            - v1-dependencies-
       - run: npm install
       - run: npm run build
-      - persist_to_workspace:
-          root: .
+      - save_cache:
           paths:
-            - .
+            - node_modules
+          key: v1-depedendencies-
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+
+  publish:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+      - run:
+          name: Publish package
+          command: npm publish
+
+workflows:
+  version: 2
+  build-publish:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+      - publish:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
+
+
+
   deploy:
     <<: *defaults
     steps:
