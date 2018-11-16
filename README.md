@@ -144,6 +144,7 @@ The following resources are supported:
   * Login with Amazon
 * Amazon Cognito user pools.
 * Amazon S3 buckets for user file storage.
+* Amazon API Gateway (multiple API gateways can be defined).
 
 ## Questions, Issues, Feature Requests
 

@@ -3,6 +3,12 @@
 
 service: sample-amplify
 
+package:
+    individually: true
+    excludeDevDependencies: false
+    exclude:
+      - node_modules/**
+
 plugins:
   modules:
     - serverless-appsync-plugin
@@ -10,8 +16,30 @@ plugins:
 
 provider:
   name: aws
+  stage: dev
   runtime: nodejs8.10
-  apiname: ${opt:apiname, 'notes_dev'}
+  apiname: notes
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "dynamodb:Query"
+        - "dynamodb:Scan"
+        - "dynamodb:GetItem"
+        - "dynamodb:PutItem"
+        - "dynamodb:UpdateItem"
+        - "dynamodb:DeleteItem"
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+
+functions:
+  list:
+    handler: handler.list
+    events:
+      - http:
+          path: notes
+          method: get
+          cors: true
 
 custom:
   accountId: { Ref: AWS::AccountId }
@@ -141,7 +169,7 @@ resources:
       Type: "AWS::DynamoDB::Table"
       Description: "Data Store for AWS AppSync Notes Type"
       Properties:
-        TableName: ${self:provider.apiname}-notes-table
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
         AttributeDefinitions:
           - AttributeName: "NoteId"
             AttributeType: "S"

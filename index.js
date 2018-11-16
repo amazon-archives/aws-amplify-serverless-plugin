@@ -117,6 +117,13 @@ class ServerlessAmplifyPlugin {
                     this.log('debug', `Processing ${JSON.stringify(resource)}`);
                     detailedResources.push(resource);   // We have all the details we need for this
                     break;
+                case 'AWS::ApiGateway::RestApi':
+                    this.log('debug', `Processing ${JSON.stringify(resource)}`);
+                    detailedResources.push(resource);
+                    break;
+                default:
+                    this.log('debug', `Skipping ${JSON.stringify(resource)}`);
+                    break;
             }
         }
 
@@ -300,6 +307,18 @@ class ServerlessAmplifyPlugin {
             }
         }
 
+        let apigw = resources.filter(r => r.ResourceType === 'AWS::ApiGateway::RestApi');
+        if (apigw.length > 0) {
+            let apiRecords = {};
+            apigw.forEach((v) => {
+                apiRecords[v.LogicalResourceId] = {
+                    Endpoint: `https://${v.PhysicalResourceId}.execute-api.${this.provider.getRegion()}.amazonaws.com/${this.provider.getStage()}`,
+                    Region: this.provider.getRegion()
+                };
+            });
+            config.APIGateway = apiRecords;
+        }
+
         this.writeConfigurationFile(fileDetails.filename, JSON.stringify(config, null, 2));
     }
 
@@ -384,6 +403,19 @@ class ServerlessAmplifyPlugin {
                 config.aws_user_files_s3_bucket = userFiles.PhysicalResourceId;
                 config.aws_user_files_s3_bucket_region = this.provider.getRegion();
             }
+        }
+
+        let apigw = resources.filter(r => r.ResourceType === 'AWS::ApiGateway::RestApi');
+        if (apigw.length > 0) {
+            let apiRecords = [];
+            apigw.forEach((v) => {
+                apiRecords.push({
+                    name: v.LogicalResourceId,
+                    endpoint: `https://${v.PhysicalResourceId}.execute-api.${this.provider.getRegion()}.amazonaws.com/${this.provider.getStage()}`,
+                    region: this.provider.getRegion()
+                });
+            });
+            config.aws_cloud_logic_custom = apiRecords;
         }
 
         let config_body = 'const awsmobile = '.concat(JSON.stringify(config, null, 2)).concat(';');
