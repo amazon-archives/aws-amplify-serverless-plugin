@@ -62,6 +62,7 @@ class ServerlessAmplifyPlugin {
             .then(resources => this.describeStackResources(resources))
             .then(resources => this.writeConfigurationFiles(resources))
             .catch(error => this.log('error', `Cannot load resources: ${error.message}`));
+        return resources;
     }
 
     /**
