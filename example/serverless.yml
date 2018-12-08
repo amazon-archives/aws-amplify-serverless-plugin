@@ -16,9 +16,10 @@ plugins:
 
 provider:
   name: aws
-  stage: dev
+  region: ${opt:region, "us-east-1"}
+  stage: ${opt:stage, "dev"}
   runtime: nodejs8.10
-  apiname: notes
+  apiname: ${self:provider.stage}Notes
   environment:
     DYNAMODB_TABLE: ${self:service}-${self:provider.stage}
   iamRoleStatements:

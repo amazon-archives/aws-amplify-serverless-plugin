@@ -16,12 +16,21 @@ class ServerlessAmplifyPlugin {
         this.useragent = `${name}/${version}`;
         this.serverless = serverless;
         this.options = options;
+
         this.provider = this.serverless.getProvider('aws');
+        this.stage = this.provider.getStage();
+        this.config = this.serverless.service.custom.amplify || [];
+
         this.hooks = {
             'after:deploy:deploy': this.process.bind(this)
         };
-        this.stackName = `${this.serverless.service.getServiceName()}-${this.provider.getStage()}`;
-        this.config = this.serverless.service.custom.amplify;
+
+        // this.stackName = `${this.serverless.service.getServiceName()}-${this.provider.getStage()}`;
+        // this.config = this.serverless.service.custom.amplify;
+    }
+
+    stackName() {
+        return this.provider.naming.getStackName();
     }
 
     /**
@@ -58,7 +67,8 @@ class ServerlessAmplifyPlugin {
      * use async/await to properly process things linearly.
      */
     process() {
-        const resources = this.listStackResources(this.stackName)
+        this.log('info', `Processing stack: ${this.stackName()}`);
+        const resources = this.listStackResources(this.stackName())
             .then(resources => this.describeStackResources(resources))
             .then(resources => this.writeConfigurationFiles(resources))
             .catch(error => this.log('error', `Cannot load resources: ${error.message}`));
@@ -73,7 +83,7 @@ class ServerlessAmplifyPlugin {
      */
     async listStackResources(stackName) {
         let resources = [];
-        let request = { StackName: this.stackName };
+        let request = { StackName: stackName };
         let morePages = false;
 
         do {

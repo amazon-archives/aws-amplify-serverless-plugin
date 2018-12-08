@@ -62,3 +62,6 @@ typings/
 
 # Serverless Framework
 .serverless
+
+# Yarn lock file
+yarn.lock
