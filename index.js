@@ -246,7 +246,7 @@ class ServerlessAmplifyPlugin {
                         AppClientId: appClient.metadata.UserPoolClient.ClientId
                     }
                 };
-                if (appClient.metadata.UserPoolClient.hasOwnProperty('AppClientSecret')) {
+                if (appClient.metadata.UserPoolClient.hasOwnProperty('ClientSecret')) {
                     config.CognitoUserPool.Default.AppClientSecret = appClient.metadata.UserPoolClient.ClientSecret
                 }
             } else {
@@ -356,7 +356,7 @@ class ServerlessAmplifyPlugin {
                 config.aws_user_pools_id = appClient.metadata.UserPoolClient.UserPoolId;
                 config.aws_user_pools_web_client_id = appClient.metadata.UserPoolClient.ClientId;
 
-                if (appClient.metadata.UserPoolClient.hasOwnProperty('AppClientSecret')) {
+                if (appClient.metadata.UserPoolClient.hasOwnProperty('ClientSecret')) {
                     config.aws_user_pools_web_client_secret = appClient.metadata.UserPoolClient.ClientSecret;
                 }
             } else {
