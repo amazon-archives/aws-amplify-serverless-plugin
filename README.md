@@ -44,6 +44,7 @@ Each entry in the `amplify` section must consist of two parts, with two optional
 * `type` is one of the following:
     * `native` (an `awsconfiguration.json` type file),
     * `javascript` (an `aws-exports.js` type file),
+    * `typescript` (identical to JavaScript, but with TypeScript interfaces),
     * `schema.json` (the AWS AppSync schema in JSON format),
     * `graphql` (a sample GraphQL operations file for codegen),
     * `appsync` (generated code for AppSync - the format is based on the extension)

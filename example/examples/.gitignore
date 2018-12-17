@@ -1,6 +1,6 @@
 // Ignoring generated files
 schema.json
 awsconfiguration.json
-aws-exports.js
+aws-exports.*
 operations.graphql
 API.swift

@@ -52,6 +52,9 @@ custom:
     - filename: examples/aws-exports.js
       type: javascript
       appClient: WebUserPoolClient
+    - filename: examples/aws-exports.ts
+      type: typescript
+      appClient: WebUserPoolClient
     - filename: examples/schema.json
       type: schema.json
     - filename: examples/operations.graphql
