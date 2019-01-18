@@ -25,9 +25,6 @@ class ServerlessAmplifyPlugin {
         this.hooks = {
             'after:deploy:deploy': this.process.bind(this)
         };
-
-        // this.stackName = `${this.serverless.service.getServiceName()}-${this.provider.getStage()}`;
-        // this.config = this.serverless.service.custom.amplify;
     }
 
     stackName() {
@@ -97,9 +94,9 @@ class ServerlessAmplifyPlugin {
         for (let resource of resources) {
             if (resource.ResourceType === 'AWS::CloudFormation::Stack') {
                 const nestedStackName = resource.PhysicalResourceId.split('/')[1];
-                resources = resources.concat(
-                    await this.listStackResources(nestedStackName)
-                );
+                this.log('info', `Processing nested stack: ${nestedStackName}`);
+                const nestedResources = await this.listStackResources(nestedStackName);
+                resources.push(...nestedResources);
             }
         }
 

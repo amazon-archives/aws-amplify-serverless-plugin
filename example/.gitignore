@@ -65,3 +65,4 @@ typings/
 
 # Yarn lock file
 yarn.lock
+package-lock.json

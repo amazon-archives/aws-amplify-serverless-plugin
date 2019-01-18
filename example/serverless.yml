@@ -3,11 +3,11 @@
 
 service: sample-amplify
 
-package:
-    individually: true
-    excludeDevDependencies: false
-    exclude:
-      - node_modules/**
+# package:
+#     individually: true
+#     excludeDevDependencies: true
+#     exclude:
+#       - node_modules/**
 
 plugins:
   modules:
@@ -22,25 +22,6 @@ provider:
   apiname: ${self:provider.stage}Notes
   environment:
     DYNAMODB_TABLE: ${self:service}-${self:provider.stage}
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - "dynamodb:Query"
-        - "dynamodb:Scan"
-        - "dynamodb:GetItem"
-        - "dynamodb:PutItem"
-        - "dynamodb:UpdateItem"
-        - "dynamodb:DeleteItem"
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
-
-functions:
-  list:
-    handler: handler.list
-    events:
-      - http:
-          path: notes
-          method: get
-          cors: true
 
 custom:
   accountId: { Ref: AWS::AccountId }
@@ -89,11 +70,6 @@ custom:
                 - { Fn::GetAtt: [ NotesTable, Arn ]}
                 - { Fn::Join: [ '', [ { Fn::GetAtt: [ NotesTable, Arn ] }, '/*' ] ] }
     mappingTemplates:
-      - dataSource: NotesTableDS
-        type: Query
-        field: allNotes
-        request: "allnotes-request.vtl"
-        response: "allnotes-response.vtl"
       - dataSource: NotesTableDS
         type: Query
         field: getNote

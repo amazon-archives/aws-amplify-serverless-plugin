@@ -7,9 +7,6 @@
     "deploy": "./node_modules/.bin/sls deploy -v"
   },
   "license": "MIT",
-  "dependencies": {
-    "aws-sdk": "^2.351.0"
-  },
   "devDependencies": {
     "aws-amplify-serverless-plugin": "file:..",
     "chalk": "^2.4.1",
