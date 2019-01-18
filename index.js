@@ -93,6 +93,15 @@ class ServerlessAmplifyPlugin {
             request.NextToken = result.NextToken;
             morePages = result.NextToken ? true : false;
         } while (morePages);
+        
+        for (let resource of resources) {
+            if (resource.ResourceType === 'AWS::CloudFormation::Stack') {
+                const nestedStackName = resource.PhysicalResourceId.split('/')[1];
+                resources = resources.concat(
+                    await this.listStackResources(nestedStackName)
+                );
+            }
+        }
 
         return resources;
     }
