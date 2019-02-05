@@ -311,7 +311,7 @@ class ServerlessAmplifyPlugin {
                 Default: {
                     ApiUrl: appSync.metadata.graphqlApi.uris.GRAPHQL,
                     Region: appSync.metadata.graphqlApi.arn.split(':')[3],
-                    AuthType: appSync.metadata.graphqlApi.authenticationType
+                    AuthMode: appSync.metadata.graphqlApi.authenticationType
                 }
             };
         }
