@@ -265,7 +265,13 @@ class ServerlessAmplifyPlugin {
             }
         }
 
-        const identityPool = resources.find(r => r.ResourceType === 'AWS::Cognito::IdentityPool');
+        const identityPools = resources.filter(r => r.ResourceType === 'AWS::Cognito::IdentityPool');
+        const identityPoolForUserPool = fileDetails.hasOwnProperty('appClient')
+            ? identityPools.find(r => r.metadata.CognitoIdentityProviders &&
+                r.metadata.CognitoIdentityProviders.some(({ClientId}) => ClientId === config.CognitoUserPool.Default.AppClientId)
+            )
+            : undefined;
+        const identityPool = identityPoolForUserPool || identityPools[0];
         if (typeof identityPool !== 'undefined') {
             config.CredentialsProvider = {
                 CognitoIdentity: {
@@ -370,7 +376,13 @@ class ServerlessAmplifyPlugin {
             }
         }
 
-        const identityPool = resources.find(r => r.ResourceType === 'AWS::Cognito::IdentityPool');
+        const identityPools = resources.filter(r => r.ResourceType === 'AWS::Cognito::IdentityPool');
+        const identityPoolForUserPool = fileDetails.hasOwnProperty('appClient')
+            ? identityPools.find(r => r.metadata.CognitoIdentityProviders &&
+                r.metadata.CognitoIdentityProviders.some(({ClientId}) => ClientId === config.aws_user_pools_web_client_id)
+            )
+            : undefined;
+        const identityPool = identityPoolForUserPool || identityPools[0];
         if (typeof identityPool !== 'undefined') {
             if (!config.hasOwnProperty("aws_cognito_region")) {
                 config.aws_cognito_region = identityPool.PhysicalResourceId.split(':')[0];
