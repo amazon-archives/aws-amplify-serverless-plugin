@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify-serverless-plugin",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A plugin for the Serverless Framework that outputs AWS Amplify artifacts based on the deployed resources.",
   "keywords": [
     "serverless",
